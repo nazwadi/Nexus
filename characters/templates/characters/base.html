@@ -15,7 +15,15 @@
             $("[data-spell-row]").each(function () {
                 const row = $(this);
                 const textMatch = !textVal || row.text().toLowerCase().indexOf(textVal) > -1;
-                const expansionMatch = !expansionVal || row.attr("data-expansion") === expansionVal;
+                let expansionMatch = true;
+                if (expansionVal) {
+                    const rowExp = parseInt(row.attr("data-expansion"));
+                    if (expansionVal.startsWith("lte:")) {
+                        expansionMatch = rowExp <= parseInt(expansionVal.slice(4));
+                    } else if (expansionVal.startsWith("eq:")) {
+                        expansionMatch = rowExp === parseInt(expansionVal.slice(3));
+                    }
+                }
                 const levelMatch = !levelVal || row.attr("data-level") === levelVal;
                 row.toggle(textMatch && expansionMatch && levelMatch);
             });
@@ -28,6 +36,7 @@
             $("#spell-filter").on("keyup", applySpellFilters);
             $("#expansion-filter").on("change", applySpellFilters);
             $("#level-filter").on("change", applySpellFilters);
+            applySpellFilters();
         });
         $(document).ready(function () {
             $("#inventory-filter").on("keyup", function () {

@@ -1,5 +1,6 @@
 import datetime
 import json
+from django.conf import settings
 from django.http import Http404
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -20,6 +21,7 @@ from common.constants import PLAYER_RACIAL_EXP_MODIFIERS
 
 from accounts.models import Account, AccountMetadata
 
+from spells.models import SpellExpansion
 from characters.utils import get_character_keyring
 from characters.utils import get_character_inventory
 from characters.utils import get_faction_information
@@ -377,6 +379,8 @@ def view_character(request, character_name):
                           "last_login": last_login,
                           "non_casters": non_casters,
                           "time_played": time_played,
+                          "expansion_choices": SpellExpansion.EXPANSION_CHOICES,
+                          "server_expansion": settings.SERVER_EXPANSION,
                           "spell_list": spell_list,
                       }
                       )

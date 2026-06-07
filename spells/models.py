@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 PATCH_HISTORY_ROLE_CHOICES = [
@@ -35,9 +36,7 @@ class SpellExpansion(models.Model):
         (19, 'Rain of Fear')
     ]
 
-    # Spells introduced in expansions beyond this value are hidden from class lists.
-    # Update when the server progresses to a new expansion.
-    MAX_EXPANSION = 5  # Legacy of Ykesha
+    MAX_EXPANSION = settings.SERVER_EXPANSION
 
     id = models.IntegerField(primary_key=True, null=False, default=0)
     spell_name = models.CharField(max_length=64, blank=True, default='',

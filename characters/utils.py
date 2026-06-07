@@ -3,6 +3,7 @@ utils.py - reusable utility functions used in character views
 """
 from collections import namedtuple
 
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import connections
 from django.db.models import F
@@ -116,7 +117,11 @@ def get_spell_information(character_id: int, class_id: int):
         .order_by(class_level_field, 'name')
     )
 
-    expansion_map = {se.id: se.expansion for se in SpellExpansion.objects.all()}
+    expansion_map = {
+        se.id: se.expansion
+        for se in SpellExpansion.objects.filter(expansion__lte=settings.SERVER_EXPANSION)
+    }
+    spell_qs = spell_qs.filter(id__in=expansion_map)
 
     spell_ids = list(spell_qs.values_list('id', flat=True))
     scroll_map = {

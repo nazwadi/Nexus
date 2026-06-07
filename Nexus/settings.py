@@ -44,6 +44,9 @@ RAID_SCHEDULER_DISCORD_WEBHOOK_URL = os.environ.get("RAID_SCHEDULER_DISCORD_WEBH
 SITE_URL = os.environ.get("SITE_URL", "http://localhost:8000")
 SITE_NAME = os.environ.get("SITE_NAME", "Nexus")
 
+# Current server expansion (0=Classic, 1=Kunark, 2=Velious, 3=Luclin, 4=PoP, 5=LoY, 6=LDoN)
+SERVER_EXPANSION = int(os.environ.get("SERVER_EXPANSION", 5))
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
