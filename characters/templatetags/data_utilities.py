@@ -909,7 +909,20 @@ def expansion_icon(value):
         3: "Luclinicon.gif",
         4: "Powericon.gif",
         5: "Ykeshaicon.gif",
-        6: "Ldonicon.gif"
+        6: "Ldonicon.gif",
+        7: "gatesicon.gif",
+        8: "omensicon.gif",
+        9: "donicon.gif",
+        10: "dodicon.png",
+        11: "poricon.png",
+        12: "serpsicon.gif",
+        13: "buried.gif",
+        14: "secrets.gif",
+        15: "seedsofdestruction.gif",
+        16: "underfoot.gif",
+        17: "thule.gif",
+        18: "alaris.gif",
+        19: "fear.gif"
     }
     return expansion_icons[value] if value in expansion_icons else None
 
