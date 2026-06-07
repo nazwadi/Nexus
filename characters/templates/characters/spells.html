@@ -18,44 +18,48 @@
                                             Spell names in&nbsp;<span style="color: #00FF00;">green</span>&nbsp;are
                                             scribed in the character's spell book.
                                         </div>
-                                        <div class="row mb-2 px-3">
-                                            <div class="col-md-4">
-                                                <label for="spell-filter"></label>
-                                                <input class="form-control" type="text" id="spell-filter"
-                                                       placeholder="Search..."/>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <label>Expansion</label>
-                                                <div style="display:flex; gap:4px;">
-                                                    <select class="form-control" id="expansion-mode" style="flex:0 0 auto; width:auto;">
-                                                        <option value="lte" selected>Through</option>
-                                                        <option value="eq">Only</option>
-                                                    </select>
-                                                    <select class="form-control" id="expansion-value" data-default="{{ server_expansion }}" style="flex:1;">
-                                                        <option value="">All</option>
-                                                        {% for exp_id, exp_name in expansion_choices %}
-                                                            <option value="{{ exp_id }}">{{ exp_name }}</option>
-                                                        {% endfor %}
-                                                    </select>
+                                        <div id="spell-filter-bar" class="px-3 py-2" style="position:sticky; top:0; z-index:10000; background-color:#0b0b10; border-bottom:1px solid #ffffff1c;">
+                                            <div class="row mb-1">
+                                                <div class="col-md-4">
+                                                    <label for="spell-filter"></label>
+                                                    <input class="form-control" type="text" id="spell-filter"
+                                                           placeholder="Search..."/>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Expansion</label>
+                                                    <div style="display:flex; gap:4px;">
+                                                        <select class="form-control" id="expansion-mode" style="flex:0 0 auto; width:auto;">
+                                                            <option value="lte">Through</option>
+                                                            <option value="eq">Only</option>
+                                                        </select>
+                                                        <select class="form-control" id="expansion-value" data-default="{{ server_expansion }}" style="flex:1;">
+                                                            <option value="">All</option>
+                                                            {% for exp_id, exp_name in expansion_choices %}
+                                                                <option value="{{ exp_id }}">{{ exp_name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label>Level</label>
+                                                    <div style="display:flex; gap:4px;">
+                                                        <select class="form-control" id="level-value" data-default="{{ server_max_level }}" style="flex:1;">
+                                                            <option value="">All Levels</option>
+                                                            {% for level in spell_list.keys %}
+                                                                <option value="{{ level }}">Level {{ level }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <select class="form-control" id="level-mode" data-default="lte" style="flex:0 0 auto; width:auto;">
+                                                            <option value="eq">Only</option>
+                                                            <option value="gte">And Higher</option>
+                                                            <option value="lte">And Lower</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
-                                                <label>Level</label>
-                                                <div style="display:flex; gap:4px;">
-                                                    <select class="form-control" id="level-value" data-default="{{ server_max_level }}" style="flex:1;">
-                                                        <option value="">All Levels</option>
-                                                        {% for level in spell_list.keys %}
-                                                            <option value="{{ level }}">Level {{ level }}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    <select class="form-control" id="level-mode" data-default="lte" style="flex:0 0 auto; width:auto;">
-                                                        <option value="eq">Only</option>
-                                                        <option value="gte">And Higher</option>
-                                                        <option value="lte">And Lower</option>
-                                                    </select>
-                                                </div>
-                                            </div>
+                                            <div id="spell-filter-summary" style="font-size:0.8rem; color:#8B9BAA; font-style:italic; padding-top:2px;"></div>
                                         </div>
+                                        <div style="overflow-x:auto;">
                                         <table id="spell-table" class="eq-table bordered eq-highlight-rows">
                                             <thead class="eq-table-floating-header">
                                             <tr>
@@ -161,6 +165,7 @@
                                             {% endfor %}
                                             </tbody>
                                         </table>
+                                        </div><!-- overflow-x wrapper -->
                                     </div>
                                 </div>
                             </div>

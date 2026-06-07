@@ -7,13 +7,84 @@
 {% endblock %}
 
 {% block inline_js %}
+    <style>
+        #back-to-top {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 99999;
+            display: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid #ffffff30;
+            background: #0b0b10;
+            color: #c8a84b;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+            transition: opacity 0.2s;
+        }
+        #back-to-top:hover { background: #1a1a2e; }
+    </style>
     <script>
-        function applySpellFilters() {
-            const textVal = $("#spell-filter").val().toLowerCase();
-            const expansionMode = $("#expansion-mode").val();
-            const expansionVal = $("#expansion-value").val();
-            const levelMode = $("#level-mode").val();
+        /* ── Spell filters ───────────────────────────────────────────── */
+        const SPELL_FILTER_KEYS = {
+            "expansion-mode":  "spells_expansion_mode",
+            "expansion-value": "spells_expansion_value",
+            "level-mode":      "spells_level_mode",
+            "level-value":     "spells_level_value",
+        };
+
+        function saveSpellFilters() {
+            Object.entries(SPELL_FILTER_KEYS).forEach(([id, key]) =>
+                sessionStorage.setItem(key, $("#" + id).val())
+            );
+        }
+
+        function loadSpellFilters() {
+            Object.entries(SPELL_FILTER_KEYS).forEach(([id, key]) => {
+                const $el = $("#" + id);
+                const stored = sessionStorage.getItem(key);
+                if (stored !== null) {
+                    $el.val(stored);
+                } else {
+                    const def = $el.data("default");
+                    if (def !== undefined && String(def) !== "") $el.val(String(def));
+                }
+            });
+        }
+
+        function updateSpellFilterSummary() {
+            const search   = $("#spell-filter").val().trim();
+            const expVal   = $("#expansion-value").val();
+            const expMode  = $("#expansion-mode").val();
             const levelVal = $("#level-value").val();
+            const levelMode = $("#level-mode").val();
+            const parts = [];
+            if (search) parts.push(`"${search}"`);
+            if (expVal) {
+                const expName = $("#expansion-value option:selected").text();
+                parts.push(expMode === "lte" ? `Through ${expName}` : `Only ${expName}`);
+            } else {
+                parts.push("All Expansions");
+            }
+            if (levelVal) {
+                const lvName = $("#level-value option:selected").text();
+                const mod = levelMode === "gte" ? "and higher" : levelMode === "lte" ? "and lower" : "only";
+                parts.push(`${lvName} ${mod}`);
+            } else {
+                parts.push("All Levels");
+            }
+            $("#spell-filter-summary").text("Showing: " + parts.join(" · "));
+        }
+
+        function applySpellFilters() {
+            const textVal     = $("#spell-filter").val().toLowerCase();
+            const expansionMode = $("#expansion-mode").val();
+            const expansionVal  = $("#expansion-value").val();
+            const levelMode   = $("#level-mode").val();
+            const levelVal    = $("#level-value").val();
             $("[data-spell-row]").each(function () {
                 const row = $(this);
                 const textMatch = !textVal || row.text().toLowerCase().indexOf(textVal) > -1;
@@ -27,9 +98,9 @@
                 if (levelVal) {
                     const rowLevel = parseInt(row.attr("data-level"));
                     const levelNum = parseInt(levelVal);
-                    if (levelMode === "gte") levelMatch = rowLevel >= levelNum;
+                    if (levelMode === "gte")      levelMatch = rowLevel >= levelNum;
                     else if (levelMode === "lte") levelMatch = rowLevel <= levelNum;
-                    else levelMatch = rowLevel === levelNum;
+                    else                          levelMatch = rowLevel === levelNum;
                 }
                 const show = textMatch && expansionMatch && levelMatch;
                 row.toggle(show);
@@ -39,47 +110,53 @@
                 const level = $(this).attr("data-level-header");
                 $(this).toggle($(`[data-spell-row][data-level="${level}"].filter-match`).length > 0);
             });
+            updateSpellFilterSummary();
+            saveSpellFilters();
         }
+
         $(document).ready(function () {
-            const defaultExp = $("#expansion-value").data("default");
-            if (defaultExp !== undefined && defaultExp !== "") {
-                $("#expansion-value").val(defaultExp);
+            if ($("#spell-filter-bar").length) {
+                loadSpellFilters();
+
+                function updateStickyOffset() {
+                    $(".eq-table-floating-header").css("top", $("#spell-filter-bar").outerHeight(true) + "px");
+                }
+                updateStickyOffset();
+                $(window).on("resize.spellfilter", updateStickyOffset);
+
+                $("#spell-filter").on("keyup", applySpellFilters);
+                $("#expansion-mode, #expansion-value").on("change", applySpellFilters);
+                $("#level-mode, #level-value").on("change", applySpellFilters);
+                applySpellFilters();
             }
-            const defaultLevelMode = $("#level-mode").data("default");
-            if (defaultLevelMode) {
-                $("#level-mode").val(defaultLevelMode);
-            }
-            const defaultLevel = $("#level-value").data("default");
-            if (defaultLevel !== undefined && defaultLevel !== "") {
-                $("#level-value").val(String(defaultLevel));
-            }
-            $("#spell-filter").on("keyup", applySpellFilters);
-            $("#expansion-mode, #expansion-value").on("change", applySpellFilters);
-            $("#level-mode, #level-value").on("change", applySpellFilters);
-            applySpellFilters();
-        });
-        $(document).ready(function () {
+
+            /* ── Other table filters ─────────────────────────────────── */
             $("#inventory-filter").on("keyup", function () {
-                let value = $(this).val().toLowerCase();
+                const value = $(this).val().toLowerCase();
                 $("#inventory-table tbody>tr").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
             });
-        });
-        $(document).ready(function () {
             $("#faction-filter").on("keyup", function () {
-                let value = $(this).val().toLowerCase();
+                const value = $(this).val().toLowerCase();
                 $("#faction-table tbody>tr").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
             });
-        });
-        $(document).ready(function () {
             $("#discovered-filter").on("keyup", function () {
-                let value = $(this).val().toLowerCase();
+                const value = $(this).val().toLowerCase();
                 $("#discovered-item-table tbody>tr").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
                 });
+            });
+
+            /* ── Back to top ─────────────────────────────────────────── */
+            $("body").append('<button id="back-to-top" title="Back to top" aria-label="Back to top">▲</button>');
+            $(window).on("scroll.btt", function () {
+                $("#back-to-top").toggle($(this).scrollTop() > 300);
+            });
+            $(document).on("click", "#back-to-top", function () {
+                $("html, body").animate({ scrollTop: 0 }, 250);
             });
         });
     </script>
