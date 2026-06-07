@@ -119,9 +119,9 @@
                 loadSpellFilters();
 
                 function updateStickyOffset() {
-                    const navH = $(".navbar").outerHeight() || 60;
-                    const filterH = $("#spell-filter-bar").outerHeight(true);
-                    $(".eq-table-floating-header").css("top", (navH + filterH) + "px");
+                    const $bar = $("#spell-filter-bar");
+                    const stickyTop = parseInt($bar.css("top")) || 60;
+                    $(".eq-table-floating-header").css("top", (stickyTop + $bar.outerHeight()) + "px");
                 }
                 updateStickyOffset();
                 $(window).on("resize.spellfilter", updateStickyOffset);
