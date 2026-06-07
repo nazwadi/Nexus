@@ -112,15 +112,12 @@ def get_spell_information(character_id: int, class_id: int):
     class_level_field = f'classes{class_id}'
     spell_qs = (
         SpellsNew.objects
-        .filter(**{f'{class_level_field}__gte': 1, f'{class_level_field}__lte': 65})
+        .filter(**{f'{class_level_field}__gte': 1, f'{class_level_field}__lt': 255})
         .annotate(level=F(class_level_field))
         .order_by(class_level_field, 'name')
     )
 
-    expansion_map = {
-        se.id: se.expansion
-        for se in SpellExpansion.objects.filter(expansion__lte=settings.SERVER_EXPANSION)
-    }
+    expansion_map = {se.id: se.expansion for se in SpellExpansion.objects.all()}
     spell_qs = spell_qs.filter(id__in=expansion_map)
 
     spell_ids = list(spell_qs.values_list('id', flat=True))

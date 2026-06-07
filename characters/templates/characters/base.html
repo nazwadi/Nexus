@@ -31,14 +31,24 @@
                     else if (levelMode === "lte") levelMatch = rowLevel <= levelNum;
                     else levelMatch = rowLevel === levelNum;
                 }
-                row.toggle(textMatch && expansionMatch && levelMatch);
+                const show = textMatch && expansionMatch && levelMatch;
+                row.toggle(show);
+                row.toggleClass("filter-match", show);
             });
             $("[data-level-header]").each(function () {
                 const level = $(this).attr("data-level-header");
-                $(this).toggle($(`[data-spell-row][data-level="${level}"]:visible`).length > 0);
+                $(this).toggle($(`[data-spell-row][data-level="${level}"].filter-match`).length > 0);
             });
         }
         $(document).ready(function () {
+            const defaultExp = $("#expansion-value").data("default");
+            if (defaultExp !== undefined && defaultExp !== "") {
+                $("#expansion-value").val(defaultExp);
+            }
+            const defaultLevel = $("#level-value").data("default");
+            if (defaultLevel !== undefined && defaultLevel !== "") {
+                $("#level-value").val(String(defaultLevel));
+            }
             $("#spell-filter").on("keyup", applySpellFilters);
             $("#expansion-mode, #expansion-value").on("change", applySpellFilters);
             $("#level-mode, #level-value").on("change", applySpellFilters);

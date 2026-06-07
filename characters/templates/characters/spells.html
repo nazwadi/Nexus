@@ -31,10 +31,10 @@
                                                         <option value="lte" selected>Through</option>
                                                         <option value="eq">Only</option>
                                                     </select>
-                                                    <select class="form-control" id="expansion-value" style="flex:1;">
+                                                    <select class="form-control" id="expansion-value" data-default="{{ server_expansion }}" style="flex:1;">
                                                         <option value="">All</option>
                                                         {% for exp_id, exp_name in expansion_choices %}
-                                                            <option value="{{ exp_id }}"{% if server_expansion == exp_id %} selected{% endif %}>{{ exp_name }}</option>
+                                                            <option value="{{ exp_id }}">{{ exp_name }}</option>
                                                         {% endfor %}
                                                     </select>
                                                 </div>
@@ -43,11 +43,11 @@
                                                 <label>Level</label>
                                                 <div style="display:flex; gap:4px;">
                                                     <select class="form-control" id="level-mode" style="flex:0 0 auto; width:auto;">
-                                                        <option value="eq" selected>Only</option>
+                                                        <option value="eq">Only</option>
                                                         <option value="gte">And Higher</option>
-                                                        <option value="lte">And Lower</option>
+                                                        <option value="lte" selected>And Lower</option>
                                                     </select>
-                                                    <select class="form-control" id="level-value" style="flex:1;">
+                                                    <select class="form-control" id="level-value" data-default="{{ server_max_level }}" style="flex:1;">
                                                         <option value="">All Levels</option>
                                                         {% for level in spell_list.keys %}
                                                             <option value="{{ level }}">Level {{ level }}</option>

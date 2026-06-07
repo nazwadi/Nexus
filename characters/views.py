@@ -381,6 +381,7 @@ def view_character(request, character_name):
                           "time_played": time_played,
                           "expansion_choices": SpellExpansion.EXPANSION_CHOICES,
                           "server_expansion": settings.SERVER_EXPANSION,
+                          "server_max_level": settings.SERVER_MAX_LEVEL,
                           "spell_list": spell_list,
                       }
                       )
