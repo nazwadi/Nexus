@@ -118,7 +118,6 @@ def get_spell_information(character_id: int, class_id: int):
     )
 
     expansion_map = {se.id: se.expansion for se in SpellExpansion.objects.all()}
-    spell_qs = spell_qs.filter(id__in=expansion_map)
 
     spell_ids = list(spell_qs.values_list('id', flat=True))
     scroll_map = {
