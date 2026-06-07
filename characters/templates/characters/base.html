@@ -45,6 +45,10 @@
             if (defaultExp !== undefined && defaultExp !== "") {
                 $("#expansion-value").val(defaultExp);
             }
+            const defaultLevelMode = $("#level-mode").data("default");
+            if (defaultLevelMode) {
+                $("#level-mode").val(defaultLevelMode);
+            }
             const defaultLevel = $("#level-value").data("default");
             if (defaultLevel !== undefined && defaultLevel !== "") {
                 $("#level-value").val(String(defaultLevel));
