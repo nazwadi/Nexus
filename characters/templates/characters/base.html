@@ -119,12 +119,21 @@
                 loadSpellFilters();
 
                 function updateStickyOffset() {
-                    const $bar = $("#spell-filter-bar");
-                    const stickyTop = parseInt($bar.css("top")) || 60;
-                    $(".eq-table-floating-header").css("top", (stickyTop + $bar.outerHeight()) + "px");
+                    const bar = document.getElementById("spell-filter-bar");
+                    if (!bar) return;
+                    const h = bar.getBoundingClientRect().height;
+                    if (h === 0) return; // tab is hidden; ResizeObserver will retry
+                    const stickyTop = parseInt(getComputedStyle(bar).top) || 60;
+                    $(".eq-table-floating-header").css("top", (stickyTop + h) + "px");
                 }
                 updateStickyOffset();
                 $(window).on("resize.spellfilter", updateStickyOffset);
+
+                // Recalculate when the filter bar becomes visible (e.g. tab switch)
+                if (window.ResizeObserver) {
+                    new ResizeObserver(updateStickyOffset)
+                        .observe(document.getElementById("spell-filter-bar"));
+                }
 
                 $("#spell-filter").on("keyup", applySpellFilters);
                 $("#expansion-mode, #expansion-value").on("change", applySpellFilters);
@@ -184,6 +193,17 @@ document.addEventListener('DOMContentLoaded', function() {
         tab.addEventListener('click', function() {
             activateTab(this.dataset.tab);
             history.replaceState(null, '', location.pathname + '#' + this.dataset.tab);
+            // Recalculate sticky offset now that the tab content is visible
+            requestAnimationFrame(function() {
+                const bar = document.getElementById("spell-filter-bar");
+                if (!bar) return;
+                const h = bar.getBoundingClientRect().height;
+                if (h === 0) return;
+                const stickyTop = parseInt(getComputedStyle(bar).top) || 60;
+                document.querySelectorAll(".eq-table-floating-header").forEach(el => {
+                    el.style.top = (stickyTop + h) + "px";
+                });
+            });
         });
     });
 });
