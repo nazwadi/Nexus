@@ -10,21 +10,27 @@
     <script>
         function applySpellFilters() {
             const textVal = $("#spell-filter").val().toLowerCase();
-            const expansionVal = $("#expansion-filter").val();
-            const levelVal = $("#level-filter").val();
+            const expansionMode = $("#expansion-mode").val();
+            const expansionVal = $("#expansion-value").val();
+            const levelMode = $("#level-mode").val();
+            const levelVal = $("#level-value").val();
             $("[data-spell-row]").each(function () {
                 const row = $(this);
                 const textMatch = !textVal || row.text().toLowerCase().indexOf(textVal) > -1;
                 let expansionMatch = true;
                 if (expansionVal) {
                     const rowExp = parseInt(row.attr("data-expansion"));
-                    if (expansionVal.startsWith("lte:")) {
-                        expansionMatch = rowExp <= parseInt(expansionVal.slice(4));
-                    } else if (expansionVal.startsWith("eq:")) {
-                        expansionMatch = rowExp === parseInt(expansionVal.slice(3));
-                    }
+                    const expNum = parseInt(expansionVal);
+                    expansionMatch = expansionMode === "lte" ? rowExp <= expNum : rowExp === expNum;
                 }
-                const levelMatch = !levelVal || row.attr("data-level") === levelVal;
+                let levelMatch = true;
+                if (levelVal) {
+                    const rowLevel = parseInt(row.attr("data-level"));
+                    const levelNum = parseInt(levelVal);
+                    if (levelMode === "gte") levelMatch = rowLevel >= levelNum;
+                    else if (levelMode === "lte") levelMatch = rowLevel <= levelNum;
+                    else levelMatch = rowLevel === levelNum;
+                }
                 row.toggle(textMatch && expansionMatch && levelMatch);
             });
             $("[data-level-header]").each(function () {
@@ -34,8 +40,8 @@
         }
         $(document).ready(function () {
             $("#spell-filter").on("keyup", applySpellFilters);
-            $("#expansion-filter").on("change", applySpellFilters);
-            $("#level-filter").on("change", applySpellFilters);
+            $("#expansion-mode, #expansion-value").on("change", applySpellFilters);
+            $("#level-mode, #level-value").on("change", applySpellFilters);
             applySpellFilters();
         });
         $(document).ready(function () {

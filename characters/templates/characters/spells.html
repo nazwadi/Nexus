@@ -25,29 +25,35 @@
                                                        placeholder="Search..."/>
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="expansion-filter"></label>
-                                                <select class="form-control" id="expansion-filter">
-                                                    <option value="">All Expansions</option>
-                                                    <optgroup label="Through Expansion">
+                                                <label>Expansion</label>
+                                                <div style="display:flex; gap:4px;">
+                                                    <select class="form-control" id="expansion-mode" style="flex:0 0 auto; width:auto;">
+                                                        <option value="lte" selected>Through</option>
+                                                        <option value="eq">Only</option>
+                                                    </select>
+                                                    <select class="form-control" id="expansion-value" style="flex:1;">
+                                                        <option value="">All</option>
                                                         {% for exp_id, exp_name in expansion_choices %}
-                                                            <option value="lte:{{ exp_id }}"{% if server_expansion == exp_id %} selected{% endif %}>Through {{ exp_name }}</option>
+                                                            <option value="{{ exp_id }}"{% if server_expansion == exp_id %} selected{% endif %}>{{ exp_name }}</option>
                                                         {% endfor %}
-                                                    </optgroup>
-                                                    <optgroup label="Only This Expansion">
-                                                        {% for exp_id, exp_name in expansion_choices %}
-                                                            <option value="eq:{{ exp_id }}">Only {{ exp_name }}</option>
-                                                        {% endfor %}
-                                                    </optgroup>
-                                                </select>
+                                                    </select>
+                                                </div>
                                             </div>
                                             <div class="col-md-4">
-                                                <label for="level-filter"></label>
-                                                <select class="form-control" id="level-filter">
-                                                    <option value="">All Levels</option>
-                                                    {% for level in spell_list.keys %}
-                                                        <option value="{{ level }}">Level {{ level }}</option>
-                                                    {% endfor %}
-                                                </select>
+                                                <label>Level</label>
+                                                <div style="display:flex; gap:4px;">
+                                                    <select class="form-control" id="level-mode" style="flex:0 0 auto; width:auto;">
+                                                        <option value="eq" selected>Only</option>
+                                                        <option value="gte">And Higher</option>
+                                                        <option value="lte">And Lower</option>
+                                                    </select>
+                                                    <select class="form-control" id="level-value" style="flex:1;">
+                                                        <option value="">All Levels</option>
+                                                        {% for level in spell_list.keys %}
+                                                            <option value="{{ level }}">Level {{ level }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                         <table id="spell-table" class="eq-table bordered eq-highlight-rows">
