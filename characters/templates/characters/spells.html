@@ -42,16 +42,16 @@
                                             <div class="col-md-4">
                                                 <label>Level</label>
                                                 <div style="display:flex; gap:4px;">
-                                                    <select class="form-control" id="level-mode" style="flex:0 0 auto; width:auto;">
-                                                        <option value="eq">Only</option>
-                                                        <option value="gte">And Higher</option>
-                                                        <option value="lte" selected>And Lower</option>
-                                                    </select>
                                                     <select class="form-control" id="level-value" data-default="{{ server_max_level }}" style="flex:1;">
                                                         <option value="">All Levels</option>
                                                         {% for level in spell_list.keys %}
                                                             <option value="{{ level }}">Level {{ level }}</option>
                                                         {% endfor %}
+                                                    </select>
+                                                    <select class="form-control" id="level-mode" style="flex:0 0 auto; width:auto;">
+                                                        <option value="eq">Only</option>
+                                                        <option value="gte">And Higher</option>
+                                                        <option value="lte" selected>And Lower</option>
                                                     </select>
                                                 </div>
                                             </div>
