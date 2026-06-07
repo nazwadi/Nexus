@@ -1,14 +1,87 @@
 import random
 import math
+from django.conf import settings
+from django.db.models import F
 from common.models.items import Items
 from common.models.spells import SpellsNew
 from common.constants import SE
 from common.constants import RACES
 from common.constants import ZONE_SHORT_TO_LONG
 from common.constants import SPELL_TARGETS
+from .models import SpellExpansion
 from .se_utils import describe_se_ac
 
 FEAR_MAX_LEVEL = 52
+
+CASTING_CLASS_IDS = [2, 3, 4, 5, 6, 8, 10, 11, 12, 13, 14, 15]
+
+
+def get_class_spell_list(class_id: int) -> dict:
+    """
+    Returns all spells available to the given class, organised by level.
+
+    Spell data uses raw int values for skill and target_type so templates can
+    apply the appropriate |player_skill / |spell_target_type filters.
+
+    Returns:
+        {level: [{'name', 'spell_id', 'level', 'expansion', 'custom_icon',
+                  'classes1'..'classes15', 'mana', 'skill', 'target_type',
+                  'scrolls'}, ...]}
+    """
+    class_level_field = f'classes{class_id}'
+
+    # Spells with no scroll_type=7 item in the game DB are NPC-only (e.g. Chant of Chaos).
+    scribable_ids = Items.objects.filter(scroll_type=7, scroll_effect__gt=0).values('scroll_effect')
+
+    spell_qs = (
+        SpellsNew.objects
+        .filter(**{f'{class_level_field}__gte': 1, f'{class_level_field}__lt': 255})
+        .filter(id__in=scribable_ids)
+        .annotate(level=F(class_level_field))
+        .order_by(class_level_field, 'name')
+    )
+
+    expansion_map = {se.id: se.expansion for se in SpellExpansion.objects.all()}
+
+    spell_ids = list(spell_qs.values_list('id', flat=True))
+
+    # Build scroll map from the game DB directly — authoritative and complete.
+    scroll_map: dict[int, list[tuple[int, str]]] = {}
+    for item in Items.objects.filter(scroll_type=7, scroll_effect__in=spell_ids).values('scroll_effect', 'id', 'Name'):
+        scroll_map.setdefault(item['scroll_effect'], []).append((item['id'], item['Name']))
+
+    spell_list = {}
+    for spell in spell_qs:
+        level = spell.level
+        spell_data = {
+            'name': spell.name,
+            'spell_id': spell.id,
+            'level': level,
+            'expansion': expansion_map.get(spell.id, 0),
+            'custom_icon': spell.custom_icon,
+            'classes1': spell.classes1,
+            'classes2': spell.classes2,
+            'classes3': spell.classes3,
+            'classes4': spell.classes4,
+            'classes5': spell.classes5,
+            'classes6': spell.classes6,
+            'classes7': spell.classes7,
+            'classes8': spell.classes8,
+            'classes9': spell.classes9,
+            'classes10': spell.classes10,
+            'classes11': spell.classes11,
+            'classes12': spell.classes12,
+            'classes13': spell.classes13,
+            'classes14': spell.classes14,
+            'classes15': spell.classes15,
+            'mana': spell.mana,
+            'skill': spell.skill,
+            'target_type': spell.target_type,
+            'scrolls': scroll_map.get(spell.id, []),
+        }
+        spell_list.setdefault(level, []).append(spell_data)
+
+    return spell_list
 
 spell_effects = {
     0: "Hitpoints",
