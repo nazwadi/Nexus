@@ -191,13 +191,13 @@ def view_npc(request, npc_id):
 
     try:
         cursor.execute("""SELECT DISTINCT
-                            sn.custom_icon,
+                            sn.new_icon,
                             sn.name,
                             sn.id
                           FROM
                             npc_spells_entries nse
                             JOIN npc_types nt ON nse.npc_spells_id = nt.npc_spells_id
-                            JOIN spells_new sn ON nse.spellid = sn.id 
+                            JOIN spells_new sn ON nse.spellid = sn.id
                           WHERE
                             nse.npc_spells_id=%s;
         """, [npc_data.npc_spells_id])
@@ -208,13 +208,13 @@ def view_npc(request, npc_id):
 
     try:
         cursor.execute("""SELECT DISTINCT
-                            sn.NAME,
-                            sn.custom_icon,
+                            sn.name,
+                            sn.new_icon,
                             ns.attack_proc,
-                            ns.proc_chance 
+                            ns.proc_chance
                           FROM
                             spells_new sn
-                            JOIN npc_spells ns ON ns.attack_proc = sn.id 
+                            JOIN npc_spells ns ON ns.attack_proc = sn.id
                           WHERE
                             ns.id=%s;
         """, [npc_data.npc_spells_id])
