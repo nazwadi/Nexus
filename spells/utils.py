@@ -33,6 +33,8 @@ def get_class_spell_list(class_id: int) -> dict:
     # Spells with no scroll_type=7 item in the game DB are NPC-only (e.g. Chant of Chaos).
     scribable_ids = Items.objects.filter(scroll_type=7, scroll_effect__gt=0).values('scroll_effect')
 
+    expansion_map = {se.id: se.expansion for se in SpellExpansion.objects.all()}
+
     spell_qs = (
         SpellsNew.objects
         .filter(**{f'{class_level_field}__gte': 1, f'{class_level_field}__lt': 255})
@@ -40,8 +42,6 @@ def get_class_spell_list(class_id: int) -> dict:
         .annotate(level=F(class_level_field))
         .order_by(class_level_field, 'name')
     )
-
-    expansion_map = {se.id: se.expansion for se in SpellExpansion.objects.all()}
 
     spell_ids = list(spell_qs.values_list('id', flat=True))
 
@@ -57,7 +57,7 @@ def get_class_spell_list(class_id: int) -> dict:
             'name': spell.name,
             'spell_id': spell.id,
             'level': level,
-            'expansion': expansion_map.get(spell.id, 0),
+            'expansion': expansion_map.get(spell.id, 99),
             'custom_icon': spell.custom_icon,
             'classes1': spell.classes1,
             'classes2': spell.classes2,
@@ -886,7 +886,7 @@ def build_effect_descriptions(spell_data: object, effects: list, spell_duration:
                 description = f"{spell_effects[effect_id]} ({effect_base_value})"  # TODO: Fix output here
             case 58:
                 description = f"{spell_effects[effect_id]}:"
-                description += f"  {RACES[effect_base_value]}"
+                description += f"  {RACES.get(effect_base_value, f'Unknown ({effect_base_value})')}"
             case 59:  # Damage Shields
                 description = f"{spell_effects[effect_id]}"
                 if base != max_value:

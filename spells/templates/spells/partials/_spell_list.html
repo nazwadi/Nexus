@@ -122,8 +122,13 @@
                     {% endfor %}
                 </td>
                 <td>
-                    <img src="/static/images/{{ spell.expansion|expansion_icon }}"
-                         alt="{{ spell.expansion }}"/>
+                    {% with icon=spell.expansion|expansion_icon %}
+                        {% if icon %}
+                            <img src="/static/images/{{ icon }}" alt="{{ spell.expansion|expansion_label }}"/>
+                        {% else %}
+                            <span style="color:#8B9BAA; font-style:italic; font-size:0.85em;">{{ spell.expansion|expansion_label }}</span>
+                        {% endif %}
+                    {% endwith %}
                 </td>
             </tr>
         {% endfor %}

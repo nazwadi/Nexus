@@ -922,9 +922,15 @@ def expansion_icon(value):
         16: "underfoot.gif",
         17: "thule.gif",
         18: "alaris.gif",
-        19: "fear.gif"
+        19: "fear.gif",
     }
     return expansion_icons[value] if value in expansion_icons else None
+
+
+@register.filter(name="expansion_label")
+def expansion_label(value):
+    from spells.models import SpellExpansion
+    return dict(SpellExpansion.EXPANSION_CHOICES).get(value, f"Expansion {value}")
 
 @register.filter(name="expansion_name")
 def expansion_name(value):

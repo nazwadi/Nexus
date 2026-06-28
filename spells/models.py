@@ -33,7 +33,9 @@ class SpellExpansion(models.Model):
         (16, 'Underfoot'),
         (17, 'House of Thule'),
         (18, 'Veil of Alaris'),
-        (19, 'Rain of Fear')
+        (19, 'Rain of Fear'),
+        (20, 'Call of the Forsaken'),
+        (99, 'Untagged'),
     ]
 
     MAX_EXPANSION = settings.SERVER_EXPANSION
