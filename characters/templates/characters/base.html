@@ -31,16 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
             activateTab(this.dataset.tab);
             history.replaceState(null, '', location.pathname + '#' + this.dataset.tab);
             // Recalculate sticky offset now that the tab content is visible
-            requestAnimationFrame(function() {
-                const bar = document.getElementById("spell-filter-bar");
-                if (!bar) return;
-                const h = bar.getBoundingClientRect().height;
-                if (h === 0) return;
-                const stickyTop = parseInt(getComputedStyle(bar).top) || 60;
-                document.querySelectorAll(".eq-table-floating-header").forEach(el => {
-                    el.style.top = (stickyTop + h) + "px";
-                });
-            });
+            requestAnimationFrame(updateStickyOffset);
         });
     });
 });
